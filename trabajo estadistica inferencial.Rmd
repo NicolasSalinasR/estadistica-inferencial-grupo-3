@@ -54,12 +54,14 @@ library(ggplot2)
 library(ggpubr)
 library(ggpattern)
 
+# Se establecen variables
 alfa <- 0.05
 n <- 100
 
 media_nula <- 10
 sigma <- 1
 
+# Se calcula el error estándar
 error <- sigma/sqrt(n)
 
 g_xlimites <- media_nula + c(-6,5) * error
@@ -218,3 +220,23 @@ print(result)
 
 ## Pregunta 5
 ### ¿Alcanzaría esta muestra para detectar la diferencia que la ingeniera sospecha que existe entre las dos máquinas de la planta con las mismas probabilidades de cometer errores?
+
+```{r}
+# Parámetros
+n <- 50  # Tamaño de muestra de cada máquina
+sd <- 1  # Desviación estándar de la distribución de volumen
+alpha <- 0.05  # Nivel de significancia
+
+# Diferencia en las medias (tamaño del efecto)
+porcentaje_moderna <- 0.96
+porcentaje_antigua <- 0.90
+diferencia_medias <- porcentaje_moderna - porcentaje_antigua
+
+# Calculamos el poder estadístico
+power <- pwr.t.test(n = n, d = diferencia_medias / sd, sig.level = alpha, type = "two.sample")$power
+
+# Imprimimos el poder estadístico
+power
+```
+
+### Existe un 0.06 de probabilidad de rechazar correctamente la hipótesis nula por lo que no alcanzaría para detectar errores debido a que el poder estadísitco es demasiado bajo.
