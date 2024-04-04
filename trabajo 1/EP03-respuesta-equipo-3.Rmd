@@ -1,13 +1,12 @@
 ---
-title: "trabajo 3 estadistica inferencia"
-author: "Nicolas salinas"
+title: "EP03-respuesta-equipo-3"
 date: "2024-04-02"
 output: html_document
 ---
 
 ## PREGUNTA 1
 
-### Si la ingeniera está seguro de que el verdadero volumen medio no puede ser superior a 10 litros y piensa rechazar la hipótesis nula cuando la muestra presente una media menor a 9,8 litros, ¿cuál es la probabilidad de que cometa un error de tipo I? Para responder, generen un gráfico de la distribución muestral de las medias hipotetizada en donde se marque la zona correspondiente a la probabilidad solicitada, para luego, basándose en este gráfico, calcular el área correspondiente. Tome como ejemplo los scripts presentados en la lectura sobre poder estadístico. 
+### Si la ingeniera está seguro de que el verdadero volumen medio no puede ser superior a 10 litros y piensa rechazar la hipótesis nula cuando la muestra presente una media menor a 9,8 litros, ¿cuál es la probabilidad de que cometa un error de tipo I? Para responder, generen un gráfico de la distribución muestral de las medias hipotetizada en donde se marque la zona correspondiente a la probabilidad solicitada, para luego, basándose en este gráfico, calcular el área correspondiente. Tome como ejemplo los scripts presentados en la lectura sobre poder estadístico.
 
 #### para responder esta pregunta, tal como se indica se realizara un grafico y se indicara (con color rojo), la zona que representa la probabilidad de cometer un error de tipo 1.
 
@@ -43,10 +42,11 @@ polygon(c(mu - 4*SEM, x_vals, x_critico), c(0, y_vals, 0), col = "red", border =
 abline(v = mu, col = "green", lty = 2)  # Marca la media poblacional bajo H0
 text(mu, dnorm(mu, mean = mu, sd = SEM) * 1.2, labels = "Capacidad máxima = 10", pos = 3, cex = 0.8, offset = 0.5)
 ```
+
 #### como se puede apreciar el valor referente a la posibilidad de cometer un error de tipo 1 es 0.0228, lo cual si obtenemos el porcentaje es de 2.28%
 
-
 ## Pregunta 2
+
 ### Si el verdadero volumen medio de los bidones fuera de 9,85 litros, ¿cuál sería la probabilidad de que la ingeniera, que obviamente no conoce este dato, cometa un error de tipo II? Para responder, agregue al gráfico anterior la verdadera distribución muestral de las medias y marquen (con otro color) la zona correspondiente a la probabilidad solicitada, para luego, basándose en este gráfico, calcular el área correspondiente. También hay ejemplos de este procedimiento en la lectura sobre poder estadístico.
 
 ```{r}
@@ -157,7 +157,8 @@ cat("error tipo 2", beta)
 
 #### se aprecia en el grafico la diferencia media de los bidones de detergente, ademas luego de calcular la probabilidad de cometer un error de tipo 2 es del 67.69588%.
 
-## Pregunta 3 
+## Pregunta 3
+
 ### Como no se conoce el verdadero volumen medio, genere un gráfico del poder estadístico con las condiciones anteriores, pero suponiendo que el verdadero volumen medio podría variar de 9,5 a 10 litros. Hay un ejemplo de este tipo de gráfico en la lectura sobre poder estadístico.
 
 ```{r}
@@ -199,6 +200,7 @@ ggplot(datos, aes(x = mu_real, y = poder_estadistico)) +
 ```
 
 ## Pregunta 4
+
 ### Considerando un volumen medio de 10 litros, ¿cuántos bidones deberían revisarse para conseguir un poder estadístico de 0,75 y un nivel de significación de 0,05?
 
 ```{r}
@@ -216,27 +218,24 @@ result <- pwr.t.test(d = delta / sigma, sig.level = alpha, power = power, type =
 # Mostrar el resultado
 print(result)
 ```
+
 #### como se puede apreciar el valor de n es igual a 56.49861, por lo que aproximando se requeririan 57 bidones para obtener un poder estadistico de 0.75, con un nivel de significancia de 0.75
 
 ## Pregunta 5
+
 ### ¿Alcanzaría esta muestra para detectar la diferencia que la ingeniera sospecha que existe entre las dos máquinas de la planta con las mismas probabilidades de cometer errores?
 
 ```{r}
 # Parámetros
 n <- 50  # Tamaño de muestra de cada máquina
 sd <- 1  # Desviación estándar de la distribución de volumen
-alpha <- 0.05  # Nivel de significancia
 
-# Diferencia en las medias (tamaño del efecto)
-porcentaje_moderna <- 0.96
-porcentaje_antigua <- 0.90
-diferencia_medias <- porcentaje_moderna - porcentaje_antigua
 
-# Calculamos el poder estadístico
-power <- pwr.t.test(n = n, d = diferencia_medias / sd, sig.level = alpha, type = "two.sample")$power
+poder <- pwr.2p.test(h=ES.h(0.9,0.96), n = n, sig.level = alpha, alternative = "two.sided")
 
 # Imprimimos el poder estadístico
-power
+poder
+
 ```
 
-### Existe un 0.06 de probabilidad de rechazar correctamente la hipótesis nula por lo que no alcanzaría para detectar errores debido a que el poder estadísitco es demasiado bajo.
+### Como se puede apreciar, el poder es de un 0.2255917, por lo que la probabilidad de cometer un error es de 22%

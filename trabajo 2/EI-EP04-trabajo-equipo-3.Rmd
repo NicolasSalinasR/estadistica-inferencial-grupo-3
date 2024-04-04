@@ -1,0 +1,16 @@
+---
+title: "EI-EP04-respuesta-equipo-3"
+output: html_document
+date: "2024-04-04"
+---
+
+# Preguntas:
+
+## 1.- Se realiza un estudio sobre las preferencias de consumo de dos tipos de chocolate, “Chocolate Blanco” y “Chocolate Negro”, entre dos grupos etarios distintos: personas adultas y personas menores de edad (niños, niños y adolecentes). Después de entrevistar a un total de 15 adultos y 9 menores de edad, se encontró que 7 menores prefieren el chocolate blanco, mientras que 10 personas adultas prefieren el chocolate negro. ¿El tipo de chocolate preferido está influenciado por el grupo etario de las y los consumidores?
+
+
+## 2.-Se llevó a cabo una encuesta para investigar si hay una distribución homogénea de pasatiempos favoritos entre dos grupos de personas: hombres y mujeres. Se seleccionaron aleatoriamente 30 personas de cada grupo y se les preguntó sobre sus pasatiempos favoritos, obteniéndose que entre los hombres 12 prefieren actividades relacionadas con la lectura, 11 con el deporte y 7 con música; mientras que entre las mujeres 15 se inclinan por actividades relacionadas con la música, 7 con la lectura y 8 con deportes. ¿Existe evidencia suficiente para concluir que la distribución de los pasatiempos favoritos es la misma entre hombres y mujeres?
+
+## 3.-Una investigación reciente en un laboratorio de Kanto se enfocó en analizar el efecto de una nueva técnica de entrenamiento en el rendimiento del ataque inicial de criaturas Pokémon. Para ello, se seleccionaron aleatoriamente 20 criaturas y registró su poder de ataque inicial. Luego, a este grupo se les sometió al entrenamiento nuevo y, al finalizar, se les registró nuevamente los niveles de ataque inicial. Los resultados se presentan a continuación:2 criaturas tenían un nivel bajo de ataque antes y después del entrenamiento.15 criaturas con nivel bajo de ataque inicial mostraron un aumento en su ataque después del entrenamiento.2 criaturas mantuvieron un alto nivel de ataque antes y después del entrenamiento.1 criatura mostró un nivel alto de ataque inicial, pero se redujo después del entrenamiento. ¿Hay evidencia de que el nuevo entrenamiento tiene un efecto significativo en el rendimiento del ataque inicial de las criaturas Pokémon?
+
+## 4.- ¿Una agencia de marketing desea determinar si hay una diferencia significativa en la efectividad de tres estrategias publicitarias utilizadas para promocionar un nuevo producto. Para ello, se ha recopilado información de personas que fueron expuestas a las tres estrategias publicitarias, registrando si mostraron una aceptación (A) o rechazo (R) a cada una de ellas. ¿Qué puede concluir la agencia de marketing sobre la efectividad de las estrategias publicitarias para promover el nuevo producto? Indicación: obtenga la muestra de 50 personas a partir del archivo “EP04 Datos.csv” que se encuentra en el directorio compartido, usando la semilla 321. Considere un nivel de significación α=0,05
