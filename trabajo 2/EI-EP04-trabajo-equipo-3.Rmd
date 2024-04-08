@@ -34,3 +34,31 @@ print(prueba)
 ## 3.-Una investigación reciente en un laboratorio de Kanto se enfocó en analizar el efecto de una nueva técnica de entrenamiento en el rendimiento del ataque inicial de criaturas Pokémon. Para ello, se seleccionaron aleatoriamente 20 criaturas y registró su poder de ataque inicial. Luego, a este grupo se les sometió al entrenamiento nuevo y, al finalizar, se les registró nuevamente los niveles de ataque inicial. Los resultados se presentan a continuación:2 criaturas tenían un nivel bajo de ataque antes y después del entrenamiento.15 criaturas con nivel bajo de ataque inicial mostraron un aumento en su ataque después del entrenamiento.2 criaturas mantuvieron un alto nivel de ataque antes y después del entrenamiento.1 criatura mostró un nivel alto de ataque inicial, pero se redujo después del entrenamiento. ¿Hay evidencia de que el nuevo entrenamiento tiene un efecto significativo en el rendimiento del ataque inicial de las criaturas Pokémon?
 
 ## 4.- ¿Una agencia de marketing desea determinar si hay una diferencia significativa en la efectividad de tres estrategias publicitarias utilizadas para promocionar un nuevo producto. Para ello, se ha recopilado información de personas que fueron expuestas a las tres estrategias publicitarias, registrando si mostraron una aceptación (A) o rechazo (R) a cada una de ellas. ¿Qué puede concluir la agencia de marketing sobre la efectividad de las estrategias publicitarias para promover el nuevo producto? Indicación: obtenga la muestra de 50 personas a partir del archivo “EP04 Datos.csv” que se encuentra en el directorio compartido, usando la semilla 321. Considere un nivel de significación α=0,05
+
+```{r}
+library(magrittr)
+library(tidyr)
+# Se leen los datos
+data <- read.csv2("~/Documentos/ejercicios_R/EI/estadistica-inferencial-grupo-3/trabajo 2/EP04Datos.csv")
+muestra <- data[sample(nrow(data), 50), ]
+muestra <- muestra %>% pivot_longer(c("estrategia_1", "estrategia_2", "estrategia_3"), names_to = "estrategias", values_to = "resultado")
+muestra
+```
+
+Luego de obtener una muestra del csv y transformar todo esto a una matriz de datos en formato largo. Luego de esto podemos notar que la variable de respuesta es dicotómica dado que puede tener el valor de "Apruebo" o "Rechazo". Además, las variables independientes siendo las estrategias son categóricas dado que no representan una cantidad numérica, y no representan un orden jerárquico entre ellos por lo que son categóricas ordinales.
+
+Se establecen las hipótesis omnibus de Q de Cochran.
+H0: La proporción de efectividad de las estrategias publicitarias es la misma para todas.
+Ha: La proporción de efectividad de las estrategias publicitarias es distinta para al menos una de ellas.
+
+```{r}
+library(RVAideMemoire)
+# Se transforma las columnas a factor
+# factor es un tipo de dato utilizado para representar variables categóricas o de tipo nominal
+muestra[["id"]] <- factor(muestra[["id"]])
+muestra[["estrategias"]] <- factor(muestra[["estrategias"]])
+# Se utiliza la prueba Q de Cochran.
+prueba <- cochran.qtest(resultado ~ estrategias | id, data = muestra, alpha = 0.05)
+prueba
+```
+Dado que el p-value = 0.8233 es mayor a la significancia de 0.05, se acepta la hipótesis nula de que la proporción de efectividad de las estrategias publicitarias es la misma para todas.
