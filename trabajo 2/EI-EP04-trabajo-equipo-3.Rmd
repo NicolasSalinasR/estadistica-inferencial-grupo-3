@@ -3,15 +3,9 @@ title: "EI-EP04-respuesta-equipo-3"
 output: html_document
 date: "2024-04-04"
 ---
-
 # Preguntas:
 
 ## 1.- Se realiza un estudio sobre las preferencias de consumo de dos tipos de chocolate, “Chocolate Blanco” y “Chocolate Negro”, entre dos grupos etarios distintos: personas adultas y personas menores de edad (niños, niños y adolecentes). Después de entrevistar a un total de 15 adultos y 9 menores de edad, se encontró que 7 menores prefieren el chocolate blanco, mientras que 10 personas adultas prefieren el chocolate negro. ¿El tipo de chocolate preferido está influenciado por el grupo etario de las y los consumidores?
-
-
-
-en primera instancia se realizara una tabla con los datos en el enunciado, esto para en primera instancia ordenarlos
-
 
 ```{r}
 # Definir los datos
@@ -22,10 +16,11 @@ datos <- data.frame(entrevistados, preferencias)
 # Crear la tabla de contingencia
 tabla <- table(entrevistados, preferencias)
 print(tabla)
-
-
 ```
-una vez tenemos los datos ordenados, se debe revisar si sus valores esperados son mayores a 5, o no
+
+Con esto, podemos observar que los datos son independientes entre sí, debido a que en primera instancia representan menos de un 10% de la población y además esta muestra se obtuvo por muestreo aleatorio simple.
+Una vez tenemos los datos ordenados, se debe revisar si sus valores esperados son mayores a 5.
+
 ```{r}
 #obtener valores esperados
 
@@ -37,21 +32,56 @@ total_general <- sum(tabla)
 valores_esperados <- total_filas %*% t(total_columnas) / total_general
 print(valores_esperados)
 ```
-como se puede apreciar, en algunos valores esperados, son mayores a 5, por lo cual se debe utilizar la prueba chi cuadrado
+Como se puede apreciar, en algunos valores esperados, son menores a 5, por lo cual se debe utilizar la prueba de Fisher.
 
-HO: el tipo de chocolate preferido esta influenciado por el grupo etario de los consumidores
-
-Ha: el tipo de chocolate preferido no esta influenciado por el grupo etario de los consumudores
+HO: el tipo de chocolate preferido está influenciado por el grupo etario de los consumidores.
+Ha: el tipo de chocolate preferido no está influenciado por el grupo etario de los consumidores.
 
 ```{r}
-prueba <- chisq.test(tabla)
+prueba <- fisher.test(tabla)
 print(prueba)
 
 ```
-en conclucion, como se puede observar el p-value es mayor que el nivel de significancia, por lo cual con un 95% de confiabilidad se falla en rechazar la hipotesis nula
+En conclusión, como se puede observar, el valor p es mayor que el nivel de significancia, por lo cual, con un 95% de confiabilidad, no se rechaza la hipótesis nula.
 
 
 ## 2.-Se llevó a cabo una encuesta para investigar si hay una distribución homogénea de pasatiempos favoritos entre dos grupos de personas: hombres y mujeres. Se seleccionaron aleatoriamente 30 personas de cada grupo y se les preguntó sobre sus pasatiempos favoritos, obteniéndose que entre los hombres 12 prefieren actividades relacionadas con la lectura, 11 con el deporte y 7 con música; mientras que entre las mujeres 15 se inclinan por actividades relacionadas con la música, 7 con la lectura y 8 con deportes. ¿Existe evidencia suficiente para concluir que la distribución de los pasatiempos favoritos es la misma entre hombres y mujeres?
+
+Para este caso en primera instancia se ordenaran los datos en una tabla de contingencia.
+
+HO: Si existe evidencia para concluir de que las proporciones son iguales.
+Ha: No existe evidencia para concluir de que las proporciones son iguales.
+```{r}
+pasatiempos <- matrix(c(12, 11, 7, 7, 8, 15), nrow = 2, byrow = TRUE,
+                      dimnames = list(c("Hombres", "Mujeres"),
+                                      c("Lectura", "Deporte", "Música")))
+print(pasatiempos)
+```
+
+Con esto, podemos observar que los datos son independientes entre sí, debido a que en primera instancia representan menos de un 10% de la población y además esta muestra se obtuvo por muestreo aleatorio simple.
+Ahora se procedera a obtener los valores esperados de cada grupo.
+
+```{r}
+total_filas <- rowSums(pasatiempos)
+total_columnas <- colSums(pasatiempos)
+total_general <- sum(pasatiempos)
+
+# Calcular los valores esperados usando la fórmula
+valores_esperados <- total_filas %*% t(total_columnas) / total_general
+print(valores_esperados)
+```
+
+Como se puede ver en la tabla de valores esperados, todos son mayores a 5, además por lo que solicitan la prueba que se procederá a utilizar es chi-cuadrado, para ello se utilizará un nivel de significancia de 95%.
+
+```{r}
+chi2_test <- chisq.test(pasatiempos)
+
+# Mostrar los resultados
+print(chi2_test)
+```
+
+Una vez hecha la prueba se obtuvo un p-value = 0.09544. Como este valor es mayor al nivel de significancia (0.05) obtenido por el 95% de confianza planteado para este estudio, se puede concluir con un 95% de confiabilidad que se falla en rechazar la hipótesis nula, por lo que no existe evidencia para concluir que las proporciones son iguales.
+
 
 ## 3.-Una investigación reciente en un laboratorio de Kanto se enfocó en analizar el efecto de una nueva técnica de entrenamiento en el rendimiento del ataque inicial de criaturas Pokémon. Para ello, se seleccionaron aleatoriamente 20 criaturas y registró su poder de ataque inicial. Luego, a este grupo se les sometió al entrenamiento nuevo y, al finalizar, se les registró nuevamente los niveles de ataque inicial. Los resultados se presentan a continuación:2 criaturas tenían un nivel bajo de ataque antes y después del entrenamiento.15 criaturas con nivel bajo de ataque inicial mostraron un aumento en su ataque después del entrenamiento.2 criaturas mantuvieron un alto nivel de ataque antes y después del entrenamiento.1 criatura mostró un nivel alto de ataque inicial, pero se redujo después del entrenamiento. ¿Hay evidencia de que el nuevo entrenamiento tiene un efecto significativo en el rendimiento del ataque inicial de las criaturas Pokémon?
 
@@ -64,6 +94,7 @@ datos <- data.frame(pokemones, antes, despues)
 tabla <- table(despues, antes)
 print(tabla)
 ```
+
 Analizando los datos del problema, tenemos una misma característica siendo el poder del ataque inicial y se quiere determinar si se produce o no un cambio significativo en las mediciones. Se realizará con un 95% de confianza.
 
 Se plantean las siguientes hipótesis.
