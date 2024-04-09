@@ -29,25 +29,22 @@ una vez tenemos los datos ordenados, se debe revisar si sus valores esperados so
 ```{r}
 #obtener valores esperados
 
-producto_sumas_dividido <- function(x) {
-  resultado_multiplicacion <- x / 24
-  return(resultado_multiplicacion)
-}
+total_filas <- rowSums(tabla)
+total_columnas <- colSums(tabla)
+total_general <- sum(tabla)
 
-# Aplicar la función elemento a elemento
-resultados <- apply(tabla, c(1,2), producto_sumas_dividido)
-
-print(resultados)
+# Calcular los valores esperados usando la fórmula
+valores_esperados <- total_filas %*% t(total_columnas) / total_general
+print(valores_esperados)
 ```
-como se puede apreciar, los valores esperados de cada instancia son menores a 5, por lo cual se debe aplicar la prueba de fisher, para lo cual se consideraran las siguientes hipotesis:
+como se puede apreciar, en algunos valores esperados, son mayores a 5, por lo cual se debe utilizar la prueba chi cuadrado
 
 HO: el tipo de chocolate preferido esta influenciado por el grupo etario de los consumidores
 
 Ha: el tipo de chocolate preferido no esta influenciado por el grupo etario de los consumudores
 
 ```{r}
-alfa <- 0.05
-prueba <- fisher.test(tabla, 1-alfa)
+prueba <- chisq.test(tabla)
 print(prueba)
 
 ```
