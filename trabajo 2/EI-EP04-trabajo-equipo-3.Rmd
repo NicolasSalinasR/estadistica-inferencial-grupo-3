@@ -113,6 +113,7 @@ Dado el p-value = 0.001154 es menor a la significancia dado por el 95% de confia
 ```{r}
 library(magrittr)
 library(tidyr)
+set.seed(321)
 # Se leen los datos
 data <- read.csv2("~/Documentos/ejercicios_R/EI/estadistica-inferencial-grupo-3/trabajo 2/EP04Datos.csv")
 muestra <- data[sample(nrow(data), 50), ]
@@ -136,4 +137,4 @@ muestra[["estrategias"]] <- factor(muestra[["estrategias"]])
 prueba <- cochran.qtest(resultado ~ estrategias | id, data = muestra, alpha = 0.05)
 prueba
 ```
-Dado que el p-value = 0.8233 es mayor a la significancia de 0.05, se acepta la hipótesis nula de que la proporción de efectividad de las estrategias publicitarias es la misma para todas.
+Dado que el p-value = 0.1938 es mayor a la significancia de 0.05, se acepta la hipótesis nula de que la proporción de efectividad de las estrategias publicitarias es la misma para todas.
