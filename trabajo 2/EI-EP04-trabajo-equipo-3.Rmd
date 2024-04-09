@@ -8,10 +8,11 @@ date: "2024-04-04"
 
 ## 1.- Se realiza un estudio sobre las preferencias de consumo de dos tipos de chocolate, “Chocolate Blanco” y “Chocolate Negro”, entre dos grupos etarios distintos: personas adultas y personas menores de edad (niños, niños y adolecentes). Después de entrevistar a un total de 15 adultos y 9 menores de edad, se encontró que 7 menores prefieren el chocolate blanco, mientras que 10 personas adultas prefieren el chocolate negro. ¿El tipo de chocolate preferido está influenciado por el grupo etario de las y los consumidores?
 
-#### para responder lo anterior se utilizara la prueba de fisher, debido a que hay pocas muestras, y estas no estan pareadas, ademas de la evidente necesidad de utilizar una prueba no parametrica para la hipotesis
-#### para lo cual se consideran las hipotesis como:
-#### hipotesis nula: el tipo de chocolate preferido esta influenciado por el grupo etario de los consumidores
-#### hipotesis alternativa: el tipo de chocolate preferido no esta influenciado por el grupo etario de los consumudores
+
+
+en primera instancia se realizara una tabla con los datos en el enunciado, esto para en primera instancia ordenarlos
+
+
 ```{r}
 # Definir los datos
 entrevistados <- c(rep("adultos", 15), rep("menores de edad", 9))
@@ -21,12 +22,36 @@ datos <- data.frame(entrevistados, preferencias)
 # Crear la tabla de contingencia
 tabla <- table(entrevistados, preferencias)
 print(tabla)
+
+
+```
+una vez tenemos los datos ordenados, se debe revisar si sus valores esperados son mayores a 5, o no
+```{r}
+#obtener valores esperados
+
+producto_sumas_dividido <- function(x) {
+  resultado_multiplicacion <- x / 24
+  return(resultado_multiplicacion)
+}
+
+# Aplicar la función elemento a elemento
+resultados <- apply(tabla, c(1,2), producto_sumas_dividido)
+
+print(resultados)
+```
+como se puede apreciar, los valores esperados de cada instancia son menores a 5, por lo cual se debe aplicar la prueba de fisher, para lo cual se consideraran las siguientes hipotesis:
+
+HO: el tipo de chocolate preferido esta influenciado por el grupo etario de los consumidores
+
+Ha: el tipo de chocolate preferido no esta influenciado por el grupo etario de los consumudores
+
+```{r}
 alfa <- 0.05
 prueba <- fisher.test(tabla, 1-alfa)
 print(prueba)
 
 ```
-#### como se puede apreciar el p-value es de 0.08938, el cual es mayor que nuestro nivel de significancia, asi que con un 95% de certeza de falla en descartar la hipotesis nula en favor de la hipotesis alternativa.
+en conclucion, como se puede observar el p-value es mayor que el nivel de significancia, por lo cual con un 95% de confiabilidad se falla en rechazar la hipotesis nula
 
 
 ## 2.-Se llevó a cabo una encuesta para investigar si hay una distribución homogénea de pasatiempos favoritos entre dos grupos de personas: hombres y mujeres. Se seleccionaron aleatoriamente 30 personas de cada grupo y se les preguntó sobre sus pasatiempos favoritos, obteniéndose que entre los hombres 12 prefieren actividades relacionadas con la lectura, 11 con el deporte y 7 con música; mientras que entre las mujeres 15 se inclinan por actividades relacionadas con la música, 7 con la lectura y 8 con deportes. ¿Existe evidencia suficiente para concluir que la distribución de los pasatiempos favoritos es la misma entre hombres y mujeres?
