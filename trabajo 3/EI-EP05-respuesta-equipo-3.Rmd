@@ -1,0 +1,57 @@
+---
+title: "EI-EP05-respuesta-equipo-3"
+author: "Sebastián Cassone"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Enunciado
+
+En una emocionante competencia de cubos Rubik, participantes de Chile, Argentina, Colombia, Uruguay, Perú y Ecuador demostraron su destreza en resolver tres tipos de cubos: 2x2x2, 3x3x3 y Megaminx.
+
+Después del torneo, un grupo de investigadores de la Asociación Mundial del Cubo, interesado en los tiempos que hicieron las jugadoras y los jugadores en la competencia, decidieron estudiar si el país y el tipo de cubo usado en cada prueba tienen influencia en los segundos que se tardan en resolverlos. Para ello usaron una muestra aleatoria de los datos de la competencia, en la cual participaron más de 2.000 personas, con las siguientes variables:
+
+id: Identificador único de cada participante.
+pais: País que representa cada participante (Argentina, Chile, Colombia, Ecuador, Perú, Uruguay).
+tipo: Tipo de cubo usado en la prueba (2x2x2, 3x3x3, Megaminx).
+tiempo: Tiempo, en segundos, que toma al participante en resolver el cubo de la prueba.
+
+# Pregunta
+¿Existen diferencias en el tiempo de resolución de cubos Megaminx entre participantes de Colombia, Ecuador y Argentina?
+
+Primero, se lee el archivo csv.
+
+```{r}
+library(dplyr)
+# Se establece la ruta para abrir el archivo y se abre
+nombre_archivo <- "EP05 Datos.csv"
+directorio <- "~/Documentos/ejercicios_R/EI/estadistica-inferencial-grupo-3/trabajo 3/"
+ruta <- file.path(directorio, nombre_archivo)
+datos <- read.csv2(ruta)
+
+# Se filtran los datos de interés
+datos_filtrados <- datos %>%
+  filter(datos$tipo == "Megaminx" & datos$pais %in% c("Colombia", "Ecuador", "Argentina"))
+datos_filtrados[["pais"]] <- factor(datos_filtrados[["pais"]])
+datos_filtrados[["X"]] <- factor(datos_filtrados[["X"]])
+```
+
+Luego de haber leído el archivo, se plantea las hipótesis para resolver el problema.
+H0: la media del tiempo de resolución de cubos Megaminx entre Colombia, Ecuador y Argentina es la misma.
+Ha: la media del tiempo de resolución de cubos Megaminx entre Colombia, Ecuador y Argentina es diferente.
+
+ACA COMPRUEBA LAS CONDICIONES
+
+Luego, una vez comprobada las condiciones hacemos la prueba ANOVA.
+```{r}
+library(ez)
+prueba2 <- ezANOVA(data = datos_filtrados, dv = tiempo, between = pais, wid = X, return_aov = TRUE)
+print(prueba2)
+```
+Debido al p-value = 1.122036e-33, con una significancia = 0.05 se rechaza la hipótesis nula, y se acepta la hipótesis alternativa con un 95% de confianza que la media del tiempo de resolución de cubos Megaminx entre Colombia, Ecuador y Argentina es diferente.
+
+Luego, debido a que son diferente la media de los tiempos, se hará un análisis post-hoc para determinar cúal o cuales tienen una media diferente.
