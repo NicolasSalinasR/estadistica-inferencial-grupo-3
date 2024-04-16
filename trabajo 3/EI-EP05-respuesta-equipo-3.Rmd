@@ -31,14 +31,11 @@ library(dplyr)
 nombre_archivo <- "EP05 Datos.csv"
 directorio <- "~/Documentos/ejercicios_R/EI/estadistica-inferencial-grupo-3/trabajo 3/"
 ruta <- file.path(directorio, nombre_archivo)
-datos <- read.csv2("EP05 Datos.csv")
+datos <- read.csv2(ruta, stringsAsFactors = TRUE)
 
 # Se filtran los datos de interés
 datos_filtrados <- datos %>%
   filter(datos$tipo == "Megaminx" & datos$pais %in% c("Colombia", "Ecuador", "Argentina"))
-datos_filtrados[["pais"]] <- factor(datos_filtrados[["pais"]])
-datos_filtrados[["X"]] <- factor(datos_filtrados[["X"]])
-
 ```
 
 Luego de haber leído el archivo, se plantea las hipótesis para resolver el problema.
@@ -46,48 +43,69 @@ H0: la media del tiempo de resolución de cubos Megaminx entre Colombia, Ecuador
 Ha: la media del tiempo de resolución de cubos Megaminx entre Colombia, Ecuador y Argentina es diferente.
 
 Como prueba a realizar para contrastar las hipotesis se eligio la prueba de ANOVA, pues es la prueba que se acomoda perfectamente a el caso de estudio.
+Debido a que debemos comparar más de dos medias muestrales, además de que estas muestras son independientes, se debe utilizar la prueba de ANOVA.
+Son independientes porque los tiempos de resolución de los cubos Megaminx de los participantes de Colombia, Ecuador y Argentina no están relacionados entre sí.
 
-para utilizar dicha prueba se deben cumplir 4 condiciones:
-primera condicion: "La escala con la cual se mide la variable dependiente tiene las propiedades de una escala de intervalos iguales"
+Para utilizar dicha prueba se deben cumplir 4 condiciones:
+Primera condición: "La escala con la cual se mide la variable dependiente tiene las propiedades de una escala de intervalos iguales"
 Para este caso efectivamente se cumple esta condicion, pues la variable dependiente es el tiempo en segundo, el cual si sigue una escala de intervalos iguales.
 
-Segunda condicion: "las K muestas son obtenidas de forma aleatoria eh independiente de la poblacion de origen"
-Para este caso se cumple esta condicion pues el enunciado lo menciona
+Segunda condición: "Las K muestras son obtenidas de forma aleatoria es independiente de la población de origen"
+Para este caso se cumple esta condicion pues el enunciado lo menciona.
 
-Tercera condicion: "Se puede suponer razonablemente que las muestras de origen siguen una distribucion normal"
+Tercera condición: "Se puede suponer razonablemente que las muestras de origen siguen una distribución normal"
 Para comprobar esto se Q-Q para cada muestra.
 ```{r}
 library(ggpubr)
 library(ggplot2)
+library(dplyr)
 
 g<- ggqqplot(datos_filtrados, x = "tiempo", y = "pais", color = "pais")
+primer_pais <- shapiro.test((datos_filtrados %>% filter(pais == "Colombia"))$tiempo )
+segundo_pais <- shapiro.test((datos_filtrados %>% filter(pais == "Argentina"))$tiempo )
+tercero_pais <- shapiro.test((datos_filtrados %>% filter(pais == "Ecuador"))$tiempo )
+primer_pais
+segundo_pais
+tercero_pais
 print(g)
 ```
-como se puede apreciar en el grafico todas las muestras siguen razonablemente una distribucion normal, por lo que se puede asumir razonablemente que la poblacion de origen tambien sigue una distribucion normal.
+Como se puede apreciar en el gráfico todas las muestras siguen razonablemente una distribución normal, por lo que se puede asumir razonablemente que la población de origen también sigue una distribución normal.
 
-cuarta condicion: "Si las muestras provienen de mas de una poblacion estas tienen la misma varianza"
-para demostrar esto se puede calcular el rango entre la varianza mas alta y la mas baja, si este rango es mayor a 1.5, esta condicion no se cumple, pero si es menor la condicion se cumple
+Cuarta condicion: "Si las muestras provienen de mas de una población estas tienen la misma varianza"
+Para demostrar esto se puede calcular el rango entre la varianza mas alta y la mas baja, si este rango es mayor a 1.5, esta condición no se cumple, pero si es menor la condición se cumple.
 
 ```{r}
 varianzas_por_pais <- aggregate(tiempo ~ pais, data = datos_filtrados, FUN = var)
 print(varianzas_por_pais)
 ```
 
-la mayor varianza es la de colombia y la menor es la de argentina.
+La mayor varianza es la de Colombia y la menor es la de Argentina.
+
 ```{r}
 #calculando el rango de las varianzas
 
 rango = 0.2828318/0.1312874
 print(rango)
 ```
-por lo anterior, la cuarta condicion no se cumple.
+
+Por lo anterior, la cuarta condición no se cumple.
 
 Luego, una vez comprobada las condiciones hacemos la prueba ANOVA.
 ```{r}
 library(ez)
-prueba2 <- ezANOVA(data = datos_filtrados, dv = tiempo, between = pais, wid = X, return_aov = TRUE)
+prueba2 <- ezANOVA(data = datos_filtrados, dv = tiempo, between = pais, wid = id, return_aov = TRUE)
 print(prueba2)
 ```
-Debido al p-value = 1.122036e-33, con una significancia = 0.05 se rechaza la hipótesis nula, y se acepta la hipótesis alternativa con un 95% de confianza que la media del tiempo de resolución de cubos Megaminx entre Colombia, Ecuador y Argentina es diferente.
+Debido al p-value = 1.122036e-33, con una significancia = 0.01 se rechaza la hipótesis nula, y se acepta la hipótesis alternativa con un 99% de confianza que la media del tiempo de resolución de cubos Megaminx entre Colombia, Ecuador y Argentina es diferente. Además, con la prueba de Levene confirmamos que las varianzas de las poblaciones son iguales.
 
 Luego, debido a que son diferente la media de los tiempos, se hará un análisis post-hoc para determinar cúal o cuales tienen una media diferente.
+
+
+```{r}
+library(ez)
+holm <- pairwise.t.test(datos_filtrados[["tiempo"]], datos_filtrados[["pais"]], p.adj = "holm", pool.sd = TRUE, paired = FALSE, conf.level = 1 - 0.05)
+print(holm)
+
+```
+
+Con los valores obtenidos de la prueba de Holm, obtenemos que si hay diferencias significativas entre los tiempos de resolución de cubos Megaminx entre participantes de Colombia, Ecuador y Argentina.
