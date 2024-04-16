@@ -31,7 +31,7 @@ library(dplyr)
 nombre_archivo <- "EP05 Datos.csv"
 directorio <- "~/Documentos/ejercicios_R/EI/estadistica-inferencial-grupo-3/trabajo 3/"
 ruta <- file.path(directorio, nombre_archivo)
-datos <- read.csv2(ruta)
+datos <- read.csv2("EP05 Datos.csv")
 
 # Se filtran los datos de interés
 datos_filtrados <- datos %>%
@@ -44,7 +44,24 @@ Luego de haber leído el archivo, se plantea las hipótesis para resolver el pro
 H0: la media del tiempo de resolución de cubos Megaminx entre Colombia, Ecuador y Argentina es la misma.
 Ha: la media del tiempo de resolución de cubos Megaminx entre Colombia, Ecuador y Argentina es diferente.
 
-ACA COMPRUEBA LAS CONDICIONES
+Como prueba a realizar para contrastar las hipotesis se eligio la prueba de ANOVA, pues es la prueba que se acomoda perfectamente a el caso de estudio.
+
+para utilizar dicha prueba se deben cumplir 4 condiciones:
+primera condicion: "La escala con la cual se mide la variable dependiente tiene las propiedades de una escala de intervalos iguales"
+Para este caso efectivamente se cumple esta condicion, pues la variable dependiente es el tiempo en segundo, el cual si sigue una escala de intervalos iguales.
+
+Segunda condicion: "las K muestas son obtenidas de forma aleatoria eh independiente de la poblacion de origen"
+Para este caso se cumple esta condicion pues el enunciado lo menciona
+
+Tercera condicion: "Se puede suponer razonablemente que las muestras de origen siguen una distribucion normal"
+Para comprobar esto se Q-Q para cada muestra.
+```{r}
+library(ggpubr)
+
+g<- ggqqplot(datos_filtrados, x = "tiempo", y = "paises")
+```
+
+
 
 Luego, una vez comprobada las condiciones hacemos la prueba ANOVA.
 ```{r}
