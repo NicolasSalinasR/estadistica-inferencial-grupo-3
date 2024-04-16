@@ -38,6 +38,7 @@ datos_filtrados <- datos %>%
   filter(datos$tipo == "Megaminx" & datos$pais %in% c("Colombia", "Ecuador", "Argentina"))
 datos_filtrados[["pais"]] <- factor(datos_filtrados[["pais"]])
 datos_filtrados[["X"]] <- factor(datos_filtrados[["X"]])
+
 ```
 
 Luego de haber leído el archivo, se plantea las hipótesis para resolver el problema.
@@ -57,11 +58,29 @@ Tercera condicion: "Se puede suponer razonablemente que las muestras de origen s
 Para comprobar esto se Q-Q para cada muestra.
 ```{r}
 library(ggpubr)
+library(ggplot2)
 
-g<- ggqqplot(datos_filtrados, x = "tiempo", y = "paises")
+g<- ggqqplot(datos_filtrados, x = "tiempo", y = "pais", color = "pais")
+print(g)
+```
+como se puede apreciar en el grafico todas las muestras siguen razonablemente una distribucion normal, por lo que se puede asumir razonablemente que la poblacion de origen tambien sigue una distribucion normal.
+
+cuarta condicion: "Si las muestras provienen de mas de una poblacion estas tienen la misma varianza"
+para demostrar esto se puede calcular el rango entre la varianza mas alta y la mas baja, si este rango es mayor a 1.5, esta condicion no se cumple, pero si es menor la condicion se cumple
+
+```{r}
+varianzas_por_pais <- aggregate(tiempo ~ pais, data = datos_filtrados, FUN = var)
+print(varianzas_por_pais)
 ```
 
+la mayor varianza es la de colombia y la menor es la de argentina.
+```{r}
+#calculando el rango de las varianzas
 
+rango = 0.2828318/0.1312874
+print(rango)
+```
+por lo anterior, la cuarta condicion no se cumple.
 
 Luego, una vez comprobada las condiciones hacemos la prueba ANOVA.
 ```{r}
