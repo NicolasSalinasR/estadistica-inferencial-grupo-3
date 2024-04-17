@@ -69,10 +69,10 @@ segundo_pais
 tercero_pais
 print(g)
 ```
-Como se puede apreciar en el gráfico todas las muestras siguen razonablemente una distribución normal, por lo que se puede asumir razonablemente que la población de origen también sigue una distribución normal.
+Como se puede apreciar en el gráfico todas las muestras siguen razonablemente una distribución normal, por lo que se puede asumir razonablemente que la población de origen también sigue una distribución normal. Además se utiliza el test shapiro-wilk y se puede observa que son mayores a una significancia del 0.01 por lo que se acepta las hipótesis nulas de estos test que es que las muestras siguen una distribución normal.
 
 Cuarta condicion: "Si las muestras provienen de mas de una población estas tienen la misma varianza"
-Para demostrar esto se puede calcular el rango entre la varianza mas alta y la mas baja, si este rango es mayor a 1.5, esta condición no se cumple, pero si es menor la condición se cumple.
+Para demostrar esto se puede calcular el rango entre la varianza más alta y la más baja, si este rango es mayor a 1.5, esta condición no se cumple, pero si es menor la condición se cumple.
 
 ```{r}
 varianzas_por_pais <- aggregate(tiempo ~ pais, data = datos_filtrados, FUN = var)
@@ -91,11 +91,13 @@ print(rango)
 Por lo anterior, la cuarta condición no se cumple.
 
 Luego, una vez comprobada las condiciones hacemos la prueba ANOVA.
+
 ```{r}
 library(ez)
 prueba2 <- ezANOVA(data = datos_filtrados, dv = tiempo, between = pais, wid = id, return_aov = TRUE)
 print(prueba2)
 ```
+
 Debido al p-value = 1.122036e-33, con una significancia = 0.01 se rechaza la hipótesis nula, y se acepta la hipótesis alternativa con un 99% de confianza que la media del tiempo de resolución de cubos Megaminx entre Colombia, Ecuador y Argentina es diferente. Además, con la prueba de Levene confirmamos que las varianzas de las poblaciones son iguales.
 
 Luego, debido a que son diferente la media de los tiempos, se hará un análisis post-hoc para determinar cúal o cuales tienen una media diferente.
