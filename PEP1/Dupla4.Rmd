@@ -1,0 +1,121 @@
+---
+title: "PEP1"
+author: ""
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+Primero se va a leer el archivo
+```{r}
+# Leer los datos del archivo
+datos <- read.csv("./EI-2024-1-PE1-Datos.csv")
+```
+
+
+# Pregunta 1
+
+Podemos observar que los datos que se solicitan en la pregunta 1 entre las cepas Carmenere, Pinot Noir y Syrah son Independientes.
+
+H0: No hay diferencias significativas entre las acidez de las cepas de vino.
+Ha: Si hay diferencias significativas en por lo menos una cepa.
+
+A priori, se quiere utilizar ANOVA para muestras independientes, por lo que se verificará las siguientes condiciones:
+1- La escala en la que se mide la variable dependiente es en interválos iguales, esta se cumple dado que la acidez se mide con el pH, y el pH posee una escala de intervalos.
+2- Las muestras obtenidas son obtenidas de manera aleatoria, esta se cumple dado que por el enunciado se nos menciona que se obtienen de forma aleatoria 36 cubas con mostos nuevos de cada cepa, asegunrando que todas vinieran de predios distintos.
+3- La población sigue una distribución normal, esto se verificará con la pruebad Shapiro-Wilk.
+
+```{r}
+shapiro_carmenere <- shapiro.test(datos$Carmenere)
+shapiro_pinot <- shapiro.test(datos$Pinot)
+shapiro_syrah <- shapiro.test(datos$Syrah)
+shapiro_carmenere
+shapiro_pinot
+shapiro_syrah
+```
+
+Podemos verificar con lo anterior que las tres muestras independientes de Carmenere, Pinot y Syrah siguen una distribución normal, dado que el p-value de las tres son menores a una significancia del 0.05 plantado en el enunciado de la pregunta con un 95% de confianza.
+
+4- Si las muestras provienen de más de una población, estas tienen la misma varianza. Lo comprobaremos
+
+```{r}
+# Se obtienen las varianzas de las tres.
+varianza_carmenere <- var(datos$Carmenere)
+varianza_pinot <- var(datos$Pinot)
+varianza_syrah <- var(datos$Syrah)
+varianza_carmenere
+varianza_pinot
+varianza_syrah
+
+# Se saca el rango entre la mayor que sería la de Pinot y la menor de Carmenere
+rango <- varianza_pinot / varianza_carmenere
+print(rango)
+```
+
+Dado que la división entre el mayor y la menor desviación es menor a 1.5 se cumple la cuarta condición para aplicar ANOVA para muestras independientes. Por lo que se aplicará esta prueba paramétrica a los datos para verificar la hipótesis nula.
+
+```{r}
+library(ez)
+library(tidyverse)
+
+datos_pivot <- datos %>% pivot_longer(c("Carmenere", "Pinot", "Syrah"), names_to = "cepas", values_to = "acidez")
+datos_pivot[["instancia"]] <- factor(1:nrow(datos_pivot))
+
+anova <- ezANOVA(data = datos_pivot, dv = acidez, between = cepas, wid = instancia, return_aov = TRUE)
+print(anova)
+```
+
+Una vez obtenido el p-value = 0.001850789 que es menor a la significancia del 0.05 se rechaza la hipótesis nula y se acepta la hipótesis alternativa que si hay diferencias significativas en por lo menos una cepa. 
+Luego de esto se aplica una análisis post-hoc para determinar que tan diferentes son los datos entre si.
+
+```{r}
+alfa <- 0.05
+holm <- pairwise.t.test(datos_pivot[["acidez"]], datos_pivot[["cepas"]], p.adj = "holm", pool.sd = TRUE, paired = FALSE, conf.level = 1 - alfa)
+holm
+```
+
+Una vez hecho el análisis post-hoc, podemos análizar que las diferencias entre Carmenere y Pinot no son significativas, sin embargo entre Syrah y Carmenere si lo son, pero entre Pinot y Syrah habría que ampliar la muestra dado que el p-value está muy cerca de la significancia, en base a esto sería recomendable ampliar la muestra para evitar posibles errores estadísticos.
+
+# Pregunta 2
+
+Dado que esta pregunta está dirigida determinar que las proporciones entre Carmenere y Merlot con acidez menores a 3,0 son las mismas. Por lo que primero filtraremos los datos, y ademas definiremos las hipótesis a utilizar.
+
+H0: proporciones entre Carmenere y Merlot con acidez menores a 3,0 son iguales.
+Ha: proporciones entre Carmenere y Merlot con acidez menores a 3,0 son diferentes.
+
+Vamos a utilizar la prueba de Chi-Cuadrado de Homogeneidad para verificar esto. Primero verificamos que las observaciones sean 5 observaciones esperadas en cada grupo.
+
+```{r}
+datos_filtrados <- datos %>% filter(Carmenere < 3.0 | Merlot < 3.0)
+
+# Acá se obtienen los que son menores a 3 que se utilizará más abajo
+datos_filtrados_carmenere <- datos %>% filter(Carmenere < 3.0)
+menores_carmenere <- length(datos_filtrados_carmenere$Carmenere)
+datos_filtrados_merlot <- datos %>% filter(Merlot < 3.0)
+menores_merlot <- length(datos_filtrados_merlot$Merlot)
+
+# Se arma la tabla de contingencia
+cepas <- c(rep("Carmenere", 36), rep("Merlot", 36))
+menor_3 <- c(rep("Menor a 3", 16), rep("Mayores a 3", 43), rep("Menor a 3", 13))
+datos_usar <- table(cepas, menor_3)
+
+print(datos_usar)
+```
+
+```{r}
+# Se obtienen los valores esperados
+total_filas <- rowSums(datos_usar)
+total_columnas <- colSums(datos_usar)
+total_general <- sum(datos_usar)
+
+# Calcular los valores esperados usando la fórmula
+valores_esperados <- total_filas %*% t(total_columnas) / total_general
+print(valores_esperados)
+```
+
+Dado que los valores esperados son mayores a 5, podemos utilizar la prueba Chi-cuadrado de homogeneidad.
+
+```{r}
+prueba <- chisq.test(datos_usar)
+print(prueba)
+```
+Con el p-value = 0.6308 que es menor a 0.05 se acepta la hipótesis nula que proporciones entre Carmenere y Merlot con acidez menores a 3,0 son iguales.
