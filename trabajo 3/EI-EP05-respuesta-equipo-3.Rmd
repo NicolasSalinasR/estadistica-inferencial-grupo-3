@@ -39,6 +39,7 @@ datos_filtrados <- datos %>%
 datos_filtrados[["pais"]] <- factor(datos_filtrados[["pais"]])
 datos_filtrados[["X"]] <- factor(datos_filtrados[["X"]])
 
+datos
 ```
 
 Luego de haber leído el archivo, se plantea las hipótesis para resolver el problema.
